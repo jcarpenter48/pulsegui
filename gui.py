@@ -24,50 +24,45 @@ import argparse
 #libraries needed for PULSE to operate
 import os
 #for executing PULSE scripts
+       
+window = Tk()
+window.title("PULSE GUI App")
+window.geometry('640x480')
 
-class MainApplicationGUI():
-        # constructor of Main class 
-        def __init__(self): 
-            self.String1="Hello"
+lblWelcome = Label(window, text="  Welcome to the PULSE GUI  ", font=("Arial Bold", 30))
+lblWelcome.config(anchor=CENTER)
         
-        window = Tk()
-        window.title("PULSE GUI App")
-        window.geometry('640x480')
+text = Text(window)
+#text.insert(END, "this is a test")
 
-        lblWelcome = Label(window, text="  Welcome to the PULSE GUI  ", font=("Arial Bold", 30))
-        lblWelcome.config(anchor=CENTER)
+def clickedAnalyze():
+    text.insert(END, "Analyzing and Aligning Faces..."+'\n')
+    #os.system("python align_face.py")
+    #os.system('exit')
+    p = subprocess.Popen(["python.exe","./align_face.py"], stdout=subprocess.PIPE)
+    out = p.stdout.read()
+    text.insert(END, out+b'\n')
+    text.insert(END, "Faces aligned. Ready to Run PULSE."+'\n')
         
-        txt = Text(master=None)
-
-        #terminal output in a text widget
-        def redirect(module, method):
-            proc = subprocess.Popen(["python", "-c",
-                "import " + module + ";" + module + "." + method + "()"], stdout=subprocess.PIPE)
-            out = proc.communicate()[0]
-            return out.decode('unicode_escape')
+btnAnalyze = Button(window, text="Analyze Faces", bg="white",fg="black", command=clickedAnalyze)
         
-        def put_in_txt():
-            txt.insert('1.0', redirect(module.get(), method.get()))
-        ###################
-        def clickedAnalyze():
-            os.system("python align_face.py")
-            os.system('exit')
-            window.update()
-        
-        btnAnalyze = Button(window, text="Analyze Faces", bg="white",fg="black", command=clickedAnalyze)
-        
-        def clickedRun():
-            os.system("python run.py -eps 8e-3")
-            os.system('exit')
+def clickedRun():
+    text.insert(END, "Executing PULSE..."+'\n')    
+    #os.system("python run.py -eps 8e-3")
+    #os.system('exit')
+    p = subprocess.Popen(["python.exe","./run.py"], stdout=subprocess.PIPE)
+    out = p.stdout.read()
+    text.insert(END, out+b'\n')
+    text.insert(END, "New faces generated. Check output folder for results."+'\n')    
             
-        btnRun = Button(window, text="   Run PULSE   ", bg="black",fg="white", command=clickedRun)
+btnRun = Button(window, text="   Run PULSE   ", bg="black",fg="white", command=clickedRun)
         
         
-        lblWelcome.pack()
-        txt.pack()
-        btnAnalyze.pack(side='left')        
-        btnRun.pack(side='right')
+lblWelcome.pack()
+text.pack()
+btnAnalyze.pack(side='left')        
+btnRun.pack(side='right')
         
-        window.mainloop()
+window.mainloop()
         
-#end class MainApplicationGUI
+#end
